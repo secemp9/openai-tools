@@ -5,8 +5,9 @@ import sys
 import os
 import errno
 
+# by default, use print for showcasing how it works, otherwise, use "return" if you want to use it's output
 
-def detector(x, url='https://huggingface.co/openai-detector/', ):
+def detector(x, url='https://huggingface.co/openai-detector/', return_type="print"):
     data = {'text': str(x)}
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     result = requests.post(url, data=json.dumps(data), headers=headers)
@@ -14,15 +15,18 @@ def detector(x, url='https://huggingface.co/openai-detector/', ):
     result_decoded = result.content.decode()
     result_dict = json.loads(result_decoded)
 
-    total_token = result_dict["all_tokens"]
-    used_token = result_dict["used_tokens"]
-    real_probability = result_dict["real_probability"]
-    fake_probability = result_dict["fake_probability"]
+    if return_type == "print":
+        all_tokens = result_dict["all_tokens"]
+        used_tokens = result_dict["used_tokens"]
+        real_probability = result_dict["real_probability"]
+        fake_probability = result_dict["fake_probability"]
 
-    print("This input has", format(total_token), "total token(s)")
-    print("This input has", format(used_token), "used token(s)")
-    print("This input is", format(real_probability, '.2%'), "real")
-    print("This input is", format(fake_probability, '.2%'), "fake")
+        print("This input has", format(all_tokens), "total token(s)")
+        print("This input has", format(used_tokens), "used token(s)")
+        print("This input is", format(real_probability, '.2%'), "real")
+        print("This input is", format(fake_probability, '.2%'), "fake")
+    elif return_type == "return":
+        return result_dict
 
 
 def gui():
